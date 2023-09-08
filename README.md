@@ -15,4 +15,4 @@ Coffeemaker is a web application simulating a e-commerce platform. The user can:
 4. Edit recipes (price, amount of each ingredient, add new ingredients)
 5. Make a recipe with a given payment
 
-The application follows MVC architecture and is guided by the [use cases]()
+The application follows MVC architecture and is guided by the [use cases](https://github.com/DJRGVC/Coffee-E-Commerce-Fullstack-Application/wiki/Use-Cases) created.
