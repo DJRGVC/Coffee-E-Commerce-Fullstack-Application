@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>View Recipes</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+  </head>
+  <script src="https://tildesites.bowdoin.edu/~k.preslermarshall/AngularJS/angular.min.js"></script>
+  <body>
+    <script th:inline="javascript">
+      /*<![CDATA[*/
+
+      var app = angular.module("myApp", []);
+      app.controller("recipesCtrl", function ($scope, $http, $q) {
+        $http.get("/api/v1/recipes").then(function (response) {
+          $scope.recipes = response.data;
+        });
+
+        $scope.make = function () {
+          var amtPaid = $scope.amtPaid;
+          var name = $scope.name;
+          $scope.submissionFailure = false;
+          $scope.submissionSuccess = false;
+          $http.post("/api/v1/makecoffee/" + name, amtPaid).then(
+            function (response) {
+              $scope.change = response.data.message;
+              $scope.submissionSuccess = true;
+            },
+            function (errResponse) {
+              console.log(errResponse);
+              $scope.submissionFailure = true;
+              $scope.error = "Error while making recipe";
+            }
+          );
+        };
+      });
+
+      /*]]>*/
+    </script>
+
+    <div
+      layout:fragment="content"
+      class="container"
+      ng-app="myApp"
+      ng-controller="recipesCtrl"
+    >
+      <nav
+        class="navbar navbar-expand-lg navbar-light bg-light"
+        style="
+          padding-left: 20px;
+          padding-right: 20px;
+          margin-bottom: 20px;
+          margin-top: 21px;
+        "
+      >
+        <a class="navbar-brand" href="/">Home</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="addrecipe.html">Add Recipe</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="deleterecipe.html">Delete Recipe</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="editrecipe.html">Edit Recipe</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="UpdateInventory.html"
+                >Update Inventory</a
+              >
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <h1>Coffee Recipes</h1>
+      <div>
+        <ul>
+          <li ng-repeat="recipe in recipes">
+            <label
+              >{{recipe.name}}
+              <input
+                type="radio"
+                ng-model="$parent.name"
+                name="name"
+                value="{{recipe.name}}"
+                required="true"
+              />
+            </label>
+          </li>
+        </ul>
+        <br />
+        <label for="amtPaid">Enter payment</label>
+        <input type="text" ng-model="amtPaid" name="amtPaid" required="true" />
+        <br />
+        <input
+          type="submit"
+          ng-click="make()"
+          value="Make Coffee"
+          class="btn btn-primary btn-sm"
+        />
+        <br />
+
+        <div ng-show="submissionSuccess" class="success">
+          Coffee was made. Your change is {{change}}.
+        </div>
+
+        <div ng-show="submissionFailure">An error occurred: {{error}}</div>
+
+        <br />
+        <a href="/index" , class="btn btn-primary">Home</a>
+      </div>
+    </div>
+  </body>
+</html>

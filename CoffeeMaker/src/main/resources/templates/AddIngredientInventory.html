@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Add Ingredient to Inventory</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <style>
+      .duplicate {
+        background-color: #f8d7da !important;
+        color: #721c24 !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div layout:fragment="content">
+      <script src="https://tildesites.bowdoin.edu/~k.preslermarshall/AngularJS/angular.min.js"></script>
+      <script>
+        /* Without these comments, Thymeleaf will try to parse the Javascript as XML and break itself sometimes */
+        /*<![CDATA[*/
+        var app = angular.module("myApp", []);
+        app.controller("addIngredient", function ($scope, $http) {
+          $scope.ingredients = [];
+          $scope.duplicateName = false;
+          $scope.negativeAmount = false;
+
+          // get current inventory
+          $http.get("/api/v1/inventory").then(function (response) {
+            $scope.ingredients = response.data.ingredients;
+          });
+
+          // create new ingredients object
+          var ings = [];
+
+          // add all ingredients to ings
+          for (var i = 0; i < $scope.ingredients.length; i++) {
+            var ing = {
+              name: $scope.ingredients[i].name,
+              amount: $scope.ingredients[i].amount,
+            };
+            ings.push(ing);
+          }
+
+          $scope.checkDuplicateName = function () {
+            var isDuplicate = $scope.ingredients.some(function (ingredient) {
+              return (
+                ingredient.name.toLowerCase() ===
+                $scope.ingredientName.toLowerCase()
+              );
+            });
+            $scope.duplicateName = isDuplicate;
+          };
+
+          $scope.checkNegativeAmount = function () {
+            $scope.negativeAmount = $scope.ingredientAmount < 0;
+            // if the amount is not a number
+            if (isNaN($scope.ingredientAmount)) {
+              $scope.negativeAmount = true;
+            }
+          };
+
+          $scope.addNewIngredient = function () {
+            if ($scope.duplicateName || $scope.negativeAmount) {
+              return;
+            }
+
+            var newIngredient = {
+              name: $scope.ingredientName,
+              amount: $scope.ingredientAmount,
+            };
+
+            ings.push(newIngredient);
+
+            var data = {
+              ingredients: ings,
+            };
+
+            $http.put("/api/v1/inventory", data).then(function (response) {
+              if (response.status === 200) {
+                // show success popup
+                var successPopup = document.createElement("div");
+                successPopup.innerHTML = "Success";
+                successPopup.style.position = "fixed";
+                successPopup.style.bottom = "10px";
+                successPopup.style.left = "50%";
+                successPopup.style.transform = "translateX(-50%)";
+                successPopup.style.padding = "10px";
+                successPopup.style.background = "green";
+                successPopup.style.color = "white";
+                successPopup.style.borderRadius = "5px";
+                successPopup.style.boxShadow = "2px 2px 5px rgba(0, 0, 0, 0.3)";
+                document.body.appendChild(successPopup);
+                // remove success popup after 2 seconds
+                setTimeout(function () {
+                  successPopup.parentNode.removeChild(successPopup);
+                }, 2000);
+              }
+            });
+          };
+        });
+      </script>
+
+      <div ng-app="myApp" ng-controller="addIngredient">
+        <div class="container">
+          <nav
+            class="navbar navbar-expand-lg navbar-light bg-light"
+            style="
+              padding-left: 20px;
+              padding-right: 20px;
+              margin-bottom: 20px;
+              margin-top: 21px;
+            "
+          >
+            <a class="navbar-brand" href="/">Home</a>
+            <button
+              class="navbar-toggler"
+              type="button"
+              data-toggle="collapse"
+              data-target="#navbarNav"
+              aria-controls="navbarNav"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+            >
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="addrecipe.html">Add Recipe</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="deleterecipe.html">Delete Recipe</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="editrecipe.html">Edit Recipe</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="UpdateInventory.html"
+                    >Update Inventory</a
+                  >
+                </li>
+              </ul>
+            </div>
+          </nav>
+
+          <h1 class="text-center">Add Ingredient to Inventory</h1>
+          <form>
+            <div class="form-group" ng-class="{ 'duplicate': duplicateName }">
+              <label for="ingredientName">Ingredient Name:</label>
+              <input
+                type="text"
+                class="form-control"
+                id="ingredientName"
+                ng-model="ingredientName"
+                ng-change="checkDuplicateName()"
+              />
+            </div>
+            <div class="form-group" ng-class="{ 'duplicate': negativeAmount }">
+              <label for="ingredientAmount">Amount:</label>
+              <input
+                type="number"
+                class="form-control"
+                id="ingredientAmount"
+                ng-model="ingredientAmount"
+                ng-change="checkNegativeAmount()"
+              />
+            </div>
+          </form>
+          <div class="d-flex justify-content-between mt-4">
+            <a href="/" class="btn btn-primary">Home</a>
+            <button
+              type="button"
+              class="btn btn-primary"
+              ng-click="addNewIngredient()"
+              ng-disabled="duplicateName || negativeAmount"
+            >
+              Add
+            </button>
+            <a href="../updateinventory" class="btn btn-primary">Back</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

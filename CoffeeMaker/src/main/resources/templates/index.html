@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>Welcome to the CSC326 CoffeeMaker</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <style>
+      body {
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      .container {
+        text-align: center;
+      }
+
+      h1 {
+        color: #333;
+        font-size: 40px;
+        margin-bottom: 20px;
+      }
+
+      h2 {
+        color: #666;
+        font-size: 24px;
+        margin-bottom: 10px;
+      }
+
+      ul {
+        list-style: none;
+        padding-left: 0;
+      }
+
+      li {
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Coffee, Coffee, Please!</h1>
+      <h2>Available Options</h2>
+      <ul>
+        <li>
+          <a class="btn btn-primary" href="updateinventory">Update Inventory</a>
+        </li>
+        <li>
+          <a class="btn btn-primary" href="addrecipe.html">Add a Recipe</a>
+        </li>
+        <li>
+          <a class="btn btn-primary" href="editrecipe">Edit Recipe</a>
+        </li>
+        <li>
+          <a class="btn btn-primary" href="deleterecipe.html">Delete Recipe</a>
+        </li>
+        <li>
+          <a class="btn btn-primary" href="makecoffee.html">Make Coffee</a>
+        </li>
+      </ul>
+    </div>
+  </body>
+</html>

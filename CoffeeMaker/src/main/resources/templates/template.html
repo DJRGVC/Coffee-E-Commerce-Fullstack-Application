@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<!--- Header information about the page -->
+<body>
+    <div layout:fragment="content">
+        <script src="https://tildesites.bowdoin.edu/~k.preslermarshall/AngularJS/angular.min.js"></script>
+        <script>
+            /* Without these comments, Thymeleaf will try to parse the Javascript as XML and break itself sometimes */
+            /*<![CDATA[*/ 
+            var app = angular.module('myApp', []);
+            app.controller('populateCtrl', function($scope, $http) {
+
+                /* Logic that handles controlling your page goes here */
+
+            });
+            
+            /* Without these comments, Thymeleaf will try to parse the Javascript as XML and break itself sometimes */
+            /*]]>*/
+        </script>
+
+        <div ng-app="myApp" ng-controller="populateCtrl">
+
+            <!--- Various HTML elements, with extra tags telling Angular how to work with them, go here -->
+
+        </div>
+        
+    </div>
+
+</body>
+</html>

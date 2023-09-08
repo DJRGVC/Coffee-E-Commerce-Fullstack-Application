@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Ingredient Inventory</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  </head>
+  <body>
+    <div layout:fragment="content">
+        <script src="https://tildesites.bowdoin.edu/~k.preslermarshall/AngularJS/angular.min.js"></script>
+        <script>
+            /* Without these comments, Thymeleaf will try to parse the Javascript as XML and break itself sometimes */
+            /*<![CDATA[*/ 
+            var app = angular.module('myApp', []);
+            app.controller('updateInventory', function($scope, $http) {  
+                     
+                 $http.get('/api/v1/inventory').then(function(response) {
+                     $scope.ingredients = response.data.ingredients
+                     console.log($scope.ingredients);
+                 });
+
+            });
+        </script>
+
+        <div ng-app="myApp" ng-controller="updateInventory">
+		    <div class="container">
+
+
+      <nav
+        class="navbar navbar-expand-lg navbar-light bg-light"
+        style="padding-left: 20px; padding-right: 20px; margin-bottom: 20px; margin-top: 21px"
+      >
+        <a class="navbar-brand" href="/">Home</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="addrecipe.html">Add Recipe</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="deleterecipe.html">Delete Recipe</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="editrecipe.html">Edit Recipe</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="UpdateInventory.html"
+                >Update Inventory</a
+              >
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+		      <h1 class="text-center">Inventory</h1>
+		      <table class="table table-striped table-bordered">
+		        <thead>
+		          <tr>
+		            <th>Ingredient</th>
+		            <th>Amount</th>
+		          </tr>
+		        </thead>
+		        <tbody>
+		          <tr ng-repeat="ingredient in ingredients">
+		            <td>{{ ingredient.name }}</td>
+		            <td>{{ ingredient.amount }}</td>
+		          </tr>
+		        </tbody>
+		      </table>
+		      <div class="d-flex justify-content-between">
+		        <a href="/" class="btn btn-primary">Home</a>
+		        <a href="addingredientinventory.html" class="btn btn-primary"
+		          >Add Ingredient</a
+		        >
+		        <a href="EditInventoryIngredient.html" class="btn btn-primary">Edit</a>
+		      </div>
+		    </div>
+		</div>
+  </body>
+</html>

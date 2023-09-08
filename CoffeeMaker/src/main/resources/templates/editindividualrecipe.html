@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Edit {{ selectedRecipe.name || 'Recipe' }}</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  </head>
+  <body>
+    <div layout:fragment="content">
+      <script src="https://tildesites.bowdoin.edu/~k.preslermarshall/AngularJS/angular.min.js"></script>
+      <script src="/services/selectedrecipeservice.js"></script>
+
+      <script>
+        /* Without these comments, Thymeleaf will try to parse the Javascript as XML and break itself sometimes */
+        /*<![CDATA[*/
+        app.controller(
+          "editRecipe",
+          function ($scope, $http, selectedRecipeService) {
+            $scope.selectedRecipe = selectedRecipeService.getRecipe("recipe");
+            console.log($scope.selectedRecipe);
+
+            $http.get("/api/v1/inventory").then(function (response) {
+              $scope.inventoryIngredients = response.data.ingredients;
+              removeCurrentIngredientsFromInventory();
+              console.log($scope.inventoryIngredients);
+            });
+
+            function removeCurrentIngredientsFromInventory() {
+              for (var i = 0; i < $scope.currentIngredients.length; i++) {
+                var currentIngredient = $scope.currentIngredients[i];
+                var index = $scope.inventoryIngredients.findIndex(function (
+                  ingredient
+                ) {
+                  return ingredient.name === currentIngredient.name;
+                });
+                if (index !== -1) {
+                  $scope.inventoryIngredients.splice(index, 1);
+                }
+              }
+            }
+
+            $scope.getIngredients = function () {
+              var currentIngredients = [];
+              for (
+                var i = 0;
+                i < $scope.selectedRecipe.ingredients.length;
+                i++
+              ) {
+                var ing = {
+                  name: $scope.selectedRecipe.ingredients[i].name,
+                  amount: $scope.selectedRecipe.ingredients[i].amount,
+                };
+                currentIngredients.push(ing);
+              }
+              return currentIngredients;
+            };
+
+            $scope.currentIngredients = $scope.getIngredients();
+            console.log($scope.currentIngredients);
+
+            $scope.updateRecipe = function () {
+              // put request to update recipe
+              $http
+                .put("/api/v1/recipes", $scope.selectedRecipe)
+                .then(function (response) {
+                  if (response.status === 200) {
+                    // show success popup
+                    var successPopup = document.createElement("div");
+                    successPopup.innerHTML = "Success";
+                    successPopup.style.position = "fixed";
+                    successPopup.style.bottom = "10px";
+                    successPopup.style.left = "50%";
+                    successPopup.style.transform = "translateX(-50%)";
+                    successPopup.style.padding = "10px";
+                    successPopup.style.background = "green";
+                    successPopup.style.color = "white";
+                    successPopup.style.borderRadius = "5px";
+                    successPopup.style.boxShadow =
+                      "2px 2px 5px rgba(0, 0, 0, 0.3)";
+                    document.body.appendChild(successPopup);
+                    // remove success popup after 2 seconds
+                    setTimeout(function () {
+                      successPopup.parentNode.removeChild(successPopup);
+                    }, 2000);
+                  }
+                });
+            };
+
+            $scope.addIngredient = function (ingredient, amount) {
+              var newIngredient = { name: ingredient, amount: amount };
+              $scope.selectedRecipe.ingredients.push(newIngredient);
+
+              // Remove added ingredient from inventoryIngredients
+              var index = $scope.inventoryIngredients.findIndex(function (ing) {
+                return ing.name === ingredient;
+              });
+              if (index !== -1) {
+                $scope.inventoryIngredients.splice(index, 1);
+              }
+            };
+
+            $scope.removeIngredient = function (index) {
+              // Remove an ingredient from the updatedRecipe object
+              var removedIngredient = $scope.selectedRecipe.ingredients[index];
+              $scope.selectedRecipe.ingredients.splice(index, 1);
+
+              // Add removed ingredient back to inventoryIngredients
+              $scope.inventoryIngredients.push(removedIngredient);
+            };
+
+            $scope.isPriceNegative = function () {
+              return (
+                $scope.selectedRecipe.price < 0 ||
+                $scope.selectedRecipe.ingredients.length == 0
+              );
+            };
+
+            $scope.isAmountNegative = function () {
+              return (
+                $scope.selectedAmount < 1 ||
+                $scope.selectedAmount === null ||
+                isNaN($scope.selectedAmount)
+              );
+            };
+          }
+        );
+      </script>
+
+      <div ng-app="myApp" ng-controller="editRecipe">
+        <div class="container">
+          <nav
+            class="navbar navbar-expand-lg navbar-light bg-light"
+            style="
+              padding-left: 20px;
+              padding-right: 20px;
+              margin-bottom: 20px;
+              margin-top: 21px;
+            "
+          >
+            <a class="navbar-brand" href="/">Home</a>
+            <button
+              class="navbar-toggler"
+              type="button"
+              data-toggle="collapse"
+              data-target="#navbarNav"
+              aria-controls="navbarNav"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+            >
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="addrecipe.html">Add Recipe</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="deleterecipe.html">Delete Recipe</a>
+                </li>
+                <li class="nav-item"></li>
+                <li class="nav-item">
+                  <a class="nav-link" href="editrecipe.html">Edit Recipe</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="UpdateInventory.html"
+                    >Update Inventory</a
+                  >
+                </li>
+              </ul>
+            </div>
+          </nav>
+          <div class="container">
+            <h1 class="text-center">Edit {{selectedRecipe.name}}</h1>
+            <div>
+              <h3 class="text-center" , style="margin-top: 20px">
+                Price:
+                <input
+                  type="number"
+                  ng-model="selectedRecipe.price"
+                  ng-class="{ 'is-invalid': isPriceNegative() }"
+                />
+              </h3>
+              <h4 style="margin-top: 40px" , class="text-center">
+                Ingredients:
+              </h4>
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Amount</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="ingredient in selectedRecipe.ingredients">
+                    <td>{{ ingredient.name }}</td>
+                    <td>
+                      <input
+                        type="text"
+                        class="form-control"
+                        ng-model="ingredient.amount"
+                      />
+                    </td>
+                    <td>
+                      <button
+                        class="btn btn-danger"
+                        ng-click="removeIngredient($index)"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="text-center" , style="margin-top: 30px">
+                <label for="ingredientDropdown"
+                  >Select an Ingredient to add:
+                </label>
+                <select
+                  id="ingredientDropdown"
+                  ng-model="selectedIngredient"
+                  ng-options="ingredient as ingredient.name for ingredient in inventoryIngredients"
+                >
+                  <option value="">-- Choose an Ingredient --</option>
+                </select>
+                <label style="margin-left: 20px" for="ingredientAmount"
+                  >Amount:</label
+                >
+
+                <input
+                  type="number"
+                  id="ingredientAmount"
+                  ng-model="selectedAmount"
+                />
+                <button
+                  class="btn btn-success"
+                  ng-click="addIngredient(selectedIngredient.name, selectedAmount)"
+                  ng-disabled="isAmountNegative()"
+                  style="margin-left: 10px"
+                >
+                  Add Ingredient
+                </button>
+              </div>
+              <div
+                style="margin-top: 50px"
+                class="d-flex justify-content-between"
+              >
+                <a href="/" class="btn btn-primary"> Home </a>
+                <button
+                  class="btn btn-primary"
+                  ng-click="updateRecipe()"
+                  ng-disabled="isPriceNegative()"
+                >
+                  Save Changes
+                </button>
+                <a href="editrecipe.html" class="btn btn-primary"> Back </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

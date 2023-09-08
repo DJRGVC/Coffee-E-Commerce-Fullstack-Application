@@ -1,0 +1,157 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Inventory</title>
+<link rel="stylesheet" href="css/bootstrap.css" />
+<link rel="stylesheet" href="css/app.css" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+<link rel="stylesheet" href="">
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+
+<style>
+input.ng-valid {
+	background-color: lightgreen;
+}
+
+input.ng-dirty.ng-invalid-required,input.ng-dirty.ng-invalid-number {
+	background-color: red;
+}
+
+input.ng-dirty.ng-invalid-min {
+	background-color: yellow;
+}
+
+
+</style>
+<script
+	src="https://tildesites.bowdoin.edu/~k.preslermarshall/AngularJS/angular.min.js"></script>
+</head>
+
+<body>
+
+
+	<script>
+		/*<![CDATA[*/
+		var app = angular.module('myApp', []);
+		app.controller('inventoryCtrl', function($scope, $http) {
+			$scope.inventoryOriginal = {
+				coffee : '',
+				milk : '',
+				sugar : '',
+				chocolate : ''
+			};
+
+			$scope.getInventory = function() {
+				$http.get("/api/v1/inventory").then(function(response) {
+					$scope.inventoryOriginal = response.data;
+				}, function(rejection) {
+					console.error("Error while getting Inventory");
+				})
+			}
+
+			$scope.updateInventory = function() {
+				$scope.success = false;
+				$scope.failure = false;
+
+				$http.put("/api/v1/inventory", $scope.inventory).then(
+						function(response) {
+							$scope.getInventory();
+
+						}, function(rejection) {
+							$scope.failure = true;
+							$scope.success = false;
+							console.error("Error while updating Inventory!");
+						});
+				$scope.success = !($scope.failure);
+			}
+
+			$scope.submit = function() {
+				$scope.updateInventory();
+				$scope.reset();
+			}
+
+			$scope.getInventory();
+
+			$scope.reset = function() {
+				$scope.inventory = {
+					coffee : '',
+					milk : '',
+					sugar : '',
+					chocolate : ''
+				};
+
+				if (undefined != $scope.addInventoryForm) {
+					$scope.addInventoryForm.$setPristine(); //reset Form
+				}
+			}
+
+			$scope.reset();
+
+		});
+		/*]]>*/
+	</script>
+
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+
+	<div class="collapse navbar-collapse" id="navbarNav">
+	  <ul class="navbar-nav">
+		<li class="nav-item">
+			<a class="nav-link" href="#">Add Recipe</a>
+		  </li>
+		<li class="nav-item">
+		  <a class="nav-link" href="#">Delete Recipe</a>
+		</li>
+		<li class="nav-item">
+		  <a class="nav-link" href="#">Edit Recipe</a>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link" href="#">Update Inventory</a>
+		  </li>
+
+	  </ul>
+	</div>
+  </nav>
+
+	<div class="generic-container ng-cloak" ng-app="myApp"
+
+
+
+		ng-controller="inventoryCtrl as ctrl">
+
+		<div class="panel panel-default">
+			<div class="panel-heading">
+
+				<div class="container text-center">
+					<table class="table table-bordered table-hover w-auto">
+						<thead>
+							<tr>
+								<th>Ingredient</th>
+								<th>Amount</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Coffee</td>
+								<td>15</td>
+							</tr>
+							<tr>
+								<td>Sugar</td>
+								<td>10</td>
+							</tr>
+							<tr>
+								<td>Caramel</td>
+								<td>20</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<div class="d-flex justify-content-around">
+					<button type="button" class="btn btn-primary">Home</button>
+					<button type="button" class="btn btn-primary">Add</button>
+					<button type="button" class="btn btn-primary">Edit</button>
+				</div>
+			</div>
+		</div>

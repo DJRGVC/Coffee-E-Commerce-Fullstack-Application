@@ -1,2 +1,11 @@
-# Coffee-E-Commerce-Fullstack-Application
-Fullstack application using HTML, CSS, AngularJS, Apache Tomcat, Spring, Java, and MySQL
+# CoffeeMaker
+
+
+*Line Coverage (should be >=70%)*
+
+![Coverage](.github/badges/jacoco.svg)
+
+*Branch Coverage (should be >=50%)*
+
+![Branches](.github/badges/branches.svg)
+

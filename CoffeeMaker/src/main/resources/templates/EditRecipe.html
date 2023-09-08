@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Edit Recipe</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  </head>
+  <body>
+    <div layout:fragment="content">
+      <script src="https://tildesites.bowdoin.edu/~k.preslermarshall/AngularJS/angular.min.js"></script>
+      <script src="/services/selectedrecipeservice.js"></script>
+      <script>
+        /* Without these comments, Thymeleaf will try to parse the Javascript as XML and break itself sometimes */
+        /*<![CDATA[*/
+        app.controller(
+          "editRecipe",
+          function ($scope, $http, selectedRecipeService) {
+            selectedRecipeService.setRecipe("recipe", null);
+            $scope.selectedRecipe = null;
+
+            $http.get("/api/v1/recipes").then(function (response) {
+              $scope.recipes = response.data;
+              console.log($scope.recipes);
+            });
+
+            $scope.selectRecipe = function (recipe) {
+              $scope.selectedRecipe = recipe;
+              selectedRecipeService.setRecipe("recipe", recipe);
+              console.log(selectedRecipeService.getRecipe("recipe"));
+            };
+
+            $scope.noSelectedRecipe = function () {
+              return $scope.selectedRecipe === null;
+            };
+          }
+        );
+      </script>
+
+      <div ng-app="myApp" ng-controller="editRecipe">
+        <div class="container">
+          <nav
+            class="navbar navbar-expand-lg navbar-light bg-light"
+            style="
+              padding-left: 20px;
+              padding-right: 20px;
+              margin-bottom: 20px;
+              margin-top: 21px;
+            "
+          >
+            <a class="navbar-brand" href="/">Home</a>
+            <button
+              class="navbar-toggler"
+              type="button"
+              data-toggle="collapse"
+              data-target="#navbarNav"
+              aria-controls="navbarNav"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+            >
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="addrecipe.html">Add Recipe</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="deleterecipe.html">Delete Recipe</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="editrecipe.html">Edit Recipe</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="UpdateInventory.html"
+                    >Update Inventory</a
+                  >
+                </li>
+              </ul>
+            </div>
+          </nav>
+
+          <h1 class="text-center">Recipes</h1>
+          <table class="table table-striped table-bordered">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                ng-repeat="recipe in recipes"
+                ng-class="{ 'table-primary': recipe === selectedRecipe }"
+                ng-click="selectRecipe(recipe)"
+              >
+                <td>{{ recipe.name }}</td>
+                <td>{{ recipe.price }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="d-flex justify-content-between">
+            <a href="/" class="btn btn-primary">Home</a>
+            <a
+              href="editindividualrecipe.html"
+              class="btn btn-primary"
+              ng-class="{ 'disabled': noSelectedRecipe() }"
+            >
+              Edit
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

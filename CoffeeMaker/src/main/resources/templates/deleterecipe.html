@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Delete Recipes</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+</head>
+<script
+	src="https://tildesites.bowdoin.edu/~k.preslermarshall/AngularJS/angular.min.js"></script>
+<body>
+	<script> 
+    /*<![CDATA[*/
+		var app = angular.module('myApp', []);
+		app.controller('recipesCtrl', function($scope, $http) {
+			
+			function updateRecipes() {
+				$http.get("/api/v1/recipes").then(function (response) {
+	  				$scope.recipes = response.data;
+	  			});
+			}
+			
+			function deleteRecipe(recipe) {
+		        $http.delete("/api/v1/recipes/" + recipe)
+		            .then(
+		            function (response) {
+		            		console.log(response);
+		    				$scope.submissionSuccess=true;	
+		    				
+		                
+		             	updateRecipes();
+		            },
+		            function(rejection){
+		                console.error('Error while deleting recipe');
+		                console.log(rejection);
+		                
+						$scope.submissionSuccess=false;	
+		                
+		             	// Update recipe list
+				        $http.get("/api/v1/recipes").then(function (response) {
+			  				$scope.recipes = response.data;
+			  			});
+		            }
+		        );
+			}
+			
+			$scope.del = function(){				
+				if ($scope.deleteAll) {
+					for (var i = 0, len = $scope.recipes.length; i < len; i++) {
+						var recipe = $scope.recipes[i];
+						deleteRecipe(recipe.name);
+					}
+				} else {
+					deleteRecipe($scope.name);
+				}
+				
+		        updateRecipes();
+			}
+			
+  			updateRecipes();
+		});
+	/*]]>*/
+	</script>
+
+	<div layout:fragment="content" class="generic-container ng-cloak"
+		ng-app="myApp" ng-controller="recipesCtrl as ctrl">
+
+        <div class="container">
+
+          <nav
+            class="navbar navbar-expand-lg navbar-light bg-light"
+            style="
+              padding-left: 20px;
+              padding-right: 20px;
+              margin-bottom: 20px;
+              margin-top: 21px;
+            "
+          >
+            <a class="navbar-brand" href="/">Home</a>
+            <button
+              class="navbar-toggler"
+              type="button"
+              data-toggle="collapse"
+              data-target="#navbarNav"
+              aria-controls="navbarNav"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+            >
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="editrecipe.html">Add Recipe</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="deleterecipe.html">Delete Recipe</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="editrecipe.html">Edit Recipe</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="UpdateInventory.html"
+                    >Update Inventory</a
+                  >
+                </li>
+              </ul>
+            </div>
+          </nav>
+
+		<h1>Coffee Recipes</h1>
+
+		<div>
+			<ul>
+				<li ng-repeat="recipe in recipes"><label>{{recipe.name}}
+						<input type="radio" ng-model="$parent.name" name="name"
+						value="{{recipe.name}}" required="true" />
+				</label></li>
+			</ul>
+			<br />
+
+
+			<div ng-if="recipes.length > 0">
+				<input type="checkbox" name="all" class="checkbox"
+					ng-model="$parent.deleteAll"> Delete all recipes? </input> <br />
+				<input type="submit" value="Delete" ng-click="del()"
+					class="btn btn-warning btn-sm" />
+			</div>
+
+
+			<div ng-if="0 >= recipes.length">There are no recipes in the
+				Coffee Maker.</div>
+			<div ng-if="submissionSuccess">Recipe deleted successfully</div>
+
+
+		</div>
+		<a href="/index">Home</a>
+	</div>
+</div>
+</body>
+</html>
